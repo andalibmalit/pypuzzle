@@ -1,48 +1,66 @@
-from typing import List
-
 class Tile :
-    __number, __dim, __sqNum = None
+    __number = None
+    __dim = None
+    __sqNum = None
     __coords = [None]*2
-    __layout = [None][None]*3
+    __layout = None
 
-    def __init__(self, int1: int, int2: int, coords: [int]) :
-        number = int1
-        dim = int2
-        newCoords(coords)
+    def __init__(self, int1, int2, ncoords) :
+        self.__number = int1
+        self.__dim = int2
+        self.newCoords(ncoords)
 
     # Getters
-    def getX() :
-        return coords[0]
+    def xZero(self) :
+        return self.__coords[0]
 
-    def getY() :
-        return coords[1]
+    def yZero(self) :
+        return self.__coords[1]
 
-    def getNum() :
-        return number
+    def getNum(self) :
+        return self.__number
 
-    def getSqNum() :
-        return sqNum
+    def getSqNum(self) :
+        return self.__sqNum
 
-    def getCoords() :
-        return coords
+    def getCoords(self) :
+        return self.__coords
 
     # Setters
-    def updateLay(newLay: [int][int]) :
-        layout = newLay
+    def updateLay(self, newLay) :
+        self.__layout = newLay
 
-    def move() :
-        if (coords[0] - 1 > -1 and layout[coords[0] - 1][coords[1]] == 0) :
-            temp = [(coords[0] - 1), coords[1]]
-            newCoords(temp)
+    def move(self) :
+        x = self.__coords[0]
+        y = self.__coords[1]
+
+        if x - 1 > -1 and layout[x - 1][y] == 0 :
+            temp = [x - 1, y]
+            self.__newCoords(temp)
             return true
-        elif (coords[0] + 1 < dim and layout[coords[0] + 1][coords[1]] == 0) :
-            temp = [(coords[0] + 1), coords[1]]
-            newCoords(temp)
+        elif x + 1 < dim and layout[x + 1][y] == 0 :
+            temp = [x + 1, y]
+            self.__newCoords(temp)
             return true
-        elif (coords[1] - 1 > -1 and layout[coords[0]][coords[1] - 1] == 0) :
-            temp = [coords[0], (coords[1] - 1)]
-            newCoords(temp)
+        elif y - 1 > -1 and layout[x][y - 1] == 0 :
+            temp = [x, y - 1]
+            self.__newCoords(temp)
             return true
-        elif (coords[1] + 1 < dim and layout[coords[0]][coords[1] + 1] == 0) :
-            temp = [coords[0], (coords[1] + 1)]
-            newCoords(temp)
+        elif y + 1 < dim and layout[x][y + 1] == 0 :
+            temp = [x, y + 1]
+            self.__newCoords(temp)
+            return true
+        else : return false
+
+    def newCoords(self, newC) :
+        self.__coords = newC
+        self.calcSqNum()
+
+    def calcSqNum(self) :
+    	self.__sqNum = self.__coords[0] * self.__dim + self.__coords[0] + 1
+        # if coords[0] == 0 :
+        #    sqNum = coords[1] + 1
+        # elif coords[1] = 0 :
+        #    sqNum = coords[0] * dim + 1
+        # else :
+        #    sqNum = coords[0] * dim + coords[1] + 1
