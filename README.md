@@ -3,6 +3,8 @@ n-puzzle in python
 
 The goal is to write a solver module using the A* search algorithm, once the puzzle game is working. *Game now working, A\* planned for spring break 2022!*
 
+
+**Change section below to *important algorithms***
 ## Interesting theory
 The crux of this program is the method **chkInversions()**, which ensures that every puzzle generated is actually solvable. This is based off the "inversions" method for determining solvability of a given n-puzzle. If we assume the tiles are displayed in a 1-D array rather than 2-D, a pair of tiles [A, B] form an inversion where A appears before B, but A > B. Take the following example (x is the empty square):
 ### 2-D puzzle
@@ -28,7 +30,7 @@ Thus the given example is solvable by the first set of criteria above.
 
 See **chkInversions()** method comments for details on how I implemented this algorithm. 
 
-## Algebraic formula for sqNum (the number of a given square on the puzzle board)
+## Algorithm for sqNum (the number of a given square on the puzzle board)
 
 Below examples are for a 1-puzzle (1x1), 2-, 3-, 4- and 5-puzzle respectively, then generalizing to an n-puzzle. (Markdown syntax messes up the spacing; if interested please read this section in plaintext...)
 

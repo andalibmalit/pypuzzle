@@ -103,7 +103,7 @@ def genPuzz(n, mode) :
             # The method below returns True if the list of Tile objects generated constitutes a solvable
             #   puzzle. If False, we generate a new list with re-shuffled coordinates until we have a
             #   solvable puzzle.
-            inver = chkInversions(tiles, n)
+            inver = solvable(tiles, n)
 
     # If mode == "solvedBoard", generate a list of Tile objects with coordinates of a solved game state.
     elif mode == "solvedBoard" :
@@ -176,7 +176,7 @@ def celebrate() :
     print(winner[0])
 
 # Returns True if list of Tile objects `tiles` constitutes a solvable puzzle, returns False if not.
-def chkInversions(tiles, n) :
+def solvable(tiles, n) :
     if (n % 2) != 0 :
         return (inversionCount(tiles) % 2) == 0
 
@@ -218,3 +218,10 @@ def inversionCount(tiles) :
             if tile1sq > tile2sq :
                 invs = invs + 1
     return invs
+
+def toList(board):
+    d1_puzzle = list()
+    for row in board:
+        for num in row:
+            d1_puzzle.append(num)
+    return d1_puzzle
