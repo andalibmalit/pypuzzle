@@ -52,7 +52,7 @@ def runGame(num) :
                 running = False
                 continue
             elif entry == "solve":
-                print("Giving up already?")
+                print("Giving up already? Solution below: ")
                 print(a_star(board, solvedBoard))
                 continue
             else :

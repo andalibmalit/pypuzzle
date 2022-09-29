@@ -1,3 +1,5 @@
+# Copy and paste at https://www.hackerrank.com/challenges/n-puzzle
+# Could use some improvement... wins half the games though!
 from math import sqrt
 
 class PriorityQueue:
@@ -40,9 +42,11 @@ class PriorityQueue:
     
     def listMoves(self):
         moves = list()
+        moves.append(0)
         for i in range(len(self.queue)):
             # Ignore initial move of '0' (empty space)
             if self.queue[i]['last_move'] != 0:
+                moves[0] += 1
                 moves.append(self.queue[i]['last_move'])
         return moves
 
@@ -61,6 +65,7 @@ def a_star(board, solved):
     while not open_queue.isEmpty():
         # Dequeue move with lowest cost, add to closed_queue
         current_state = open_queue.dequeue()
+        
         while not open_queue.isEmpty():
             open_queue.dequeue()
         
@@ -77,7 +82,7 @@ def a_star(board, solved):
             next_state = {'board_state': tentative_state, 
                          'last_move': move['moved'], 
                          'possible_moves': possible_moves(tentative_state), 
-                         'cost': start_dist + manhattan(tentative_state, solved) + sqrt(misplaced(init_board, tentative_state))}
+                         'cost': start_dist + manhattan(tentative_state, solved) + sqrt(misplaced(init_board, tentative_state)) + 1}
             
             if not closed_queue.contains(next_state):
                 if open_queue.contains(next_state):
@@ -108,16 +113,16 @@ def possible_moves(board):
     
     if i % len(board) > 0:
         moved, new_state = swap_tiles(board_1D, i, i - 1, len(board))
-        moves.append({'moved': moved, 'new_state': new_state})
+        moves.append({'moved': "LEFT", 'new_state': new_state})
     if i % len(board) + 1 < len(board):
         moved, new_state = swap_tiles(board_1D, i, i + 1, len(board))
-        moves.append({'moved': moved, 'new_state': new_state})
+        moves.append({'moved': "RIGHT", 'new_state': new_state})
     if i - len(board) >= 0:
         moved, new_state = swap_tiles(board_1D, i, i - len(board), len(board))
-        moves.append({'moved': moved, 'new_state': new_state})
+        moves.append({'moved': "UP", 'new_state': new_state})
     if i + len(board) < (len(board))**2:
         moved, new_state = swap_tiles(board_1D, i, i + len(board), len(board))
-        moves.append({'moved': moved, 'new_state': new_state})
+        moves.append({'moved': "DOWN", 'new_state': new_state})
         
     return moves
     
@@ -154,7 +159,7 @@ def toList(board):
     board_1D = list()
     for row in board:
         for num in row:
-            board_1D.append(num)
+            board_1D.append(int(num))
     return board_1D
 
 
@@ -167,3 +172,26 @@ def toBoard(board_1D, size):
         depth += size - 1
         
     return board
+
+contents = []
+while True:
+    try:
+        line = input()
+    except EOFError:
+        break
+    contents.append(line)
+
+size = int(contents[0])
+tiles = contents[1:]
+board = toBoard(tiles, size)
+solved = [[0 for i in range(size)] for j in range(size)]
+x = 0
+while x < size**2:
+    for i in range(size):
+        for j in range(size):
+            solved[i][j] = x
+            x += 1
+            
+soln = a_star(board, solved)
+for item in soln:
+    print(item)
