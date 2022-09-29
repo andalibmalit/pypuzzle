@@ -1,7 +1,7 @@
 from game_functions import *
 
-print('''Welcome to n-puzzle! The number of tiles in the puzzle is (n * n - 1), where n 
-is an integer greater than 1. The more tiles, the harder the puzzle.''')
+print('''Welcome to n-puzzle! The number of tiles in the puzzle is n = (k * k - 1).
+      The more tiles, the harder the puzzle.''')
 print()
 
 #
@@ -13,7 +13,7 @@ print()
 
 while True:
     try :
-        size = int(input("What size puzzle would you like to solve? Enter an integer n > 1: "))
+        size = int(input("What size puzzle would you like to solve? Enter an integer k > 1: "))
     except ValueError:
         print("Invalid input! \n")
         continue

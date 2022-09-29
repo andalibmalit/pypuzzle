@@ -1,5 +1,6 @@
 import random, math
 from tile import Tile
+from solver import a_star
 
 def runGame(num) :
     # Puzzle will be `num` * `num` dimensions, where `num` is an integer from user input.
@@ -49,6 +50,10 @@ def runGame(num) :
             elif entry == "quit" :
                 print("Goodbye!")
                 running = False
+                continue
+            elif entry == "solve":
+                print("Giving up already? Solution below: ")
+                print(a_star(board, solvedBoard))
                 continue
             else :
                 print("Invalid input!")
@@ -103,7 +108,7 @@ def genPuzz(n, mode) :
             # The method below returns True if the list of Tile objects generated constitutes a solvable
             #   puzzle. If False, we generate a new list with re-shuffled coordinates until we have a
             #   solvable puzzle.
-            inver = chkInversions(tiles, n)
+            inver = solvable(tiles, n)
 
     # If mode == "solvedBoard", generate a list of Tile objects with coordinates of a solved game state.
     elif mode == "solvedBoard" :
@@ -133,7 +138,7 @@ def printRules(solvedBoard, DIM) :
     print("\n RULES: \n 1) Move the numbered tiles on the board \n\t until they are in order from 1-" + str(DIM * DIM - 1) + ". \n\t When solved, it will look like this: ")
     printBoard(solvedBoard)
     print(" 2) You can only move tiles into an \n\t empty space. You cannot move \n\t diagonally. \n\n 3) Input the number of the tile you \n\t wish to move and press Enter. \n")
-    print(" \n Other commands you can type: \n\t \"help\" - show these rules again \n\t \"quit\" - exit the game \n")
+    print(" \n Other commands you can type: \n\t \"help\" - show these rules again \n\t \"solve\" - print the solution \n\t \"quit\" - exit the game \n")
 
 # Prints 2*2 list `board` in lines of size `len(board)`, with even spacing between items on a line.
 def printBoard(board) :
@@ -176,7 +181,7 @@ def celebrate() :
     print(winner[0])
 
 # Returns True if list of Tile objects `tiles` constitutes a solvable puzzle, returns False if not.
-def chkInversions(tiles, n) :
+def solvable(tiles, n) :
     if (n % 2) != 0 :
         return (inversionCount(tiles) % 2) == 0
 
