@@ -65,4 +65,4 @@ sqNum = (x-1)n + y
 
 To get zero-indexed coordinates (for 2D array in program), subtract one from x and y respectively
 
-Thus the formula used in the function calcSqNum() is `sqNum = coords[0] * dim + coords[1] + 1` where coords[0] is the zero-indexed x coordinate, and coords[1] is the zero-indexed y-coordinate
+Thus the formula used in the function calcSqNum() is `sqNum = coords[0] * dim + coords[1] + 1` where coords[0] is the zero-indexed x coordinate, and coords[1] is the zero-indexed y-coordinate 
