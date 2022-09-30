@@ -4,13 +4,6 @@ print('''Welcome to n-puzzle! The number of tiles in the puzzle is n = (k * k - 
       The more tiles, the harder the puzzle.''')
 print()
 
-#
-
-# WARNING! There is currently no limit on puzzle size, very large values of n may crash your computer.
-#   (Threshold to be determined...)
-
-#
-
 while True:
     try :
         size = int(input("What size puzzle would you like to solve? Enter an integer k > 1: "))
