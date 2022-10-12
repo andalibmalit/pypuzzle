@@ -1,5 +1,6 @@
 # pypuzzle
-n-puzzle in python
+A sliding tile puzzle game of arbitrary size n = k*k - 1.
+Solver uses A* search with Manhattan distance heuristic.
 
 ## Interesting theory
 The method **chkInversions()** ensures that every puzzle generated is actually solvable. This is based off the "inversions" method for determining solvability of a given n-puzzle. If we assume the tiles are displayed in a 1-D array rather than 2-D, a pair of tiles [A, B] form an inversion where A appears before B, but A > B. Take the following example (x is the empty square):
