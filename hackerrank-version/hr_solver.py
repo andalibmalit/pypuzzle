@@ -1,3 +1,4 @@
+# To test, upload at https://www.hackerrank.com/challenges/n-puzzle
 from itertools import count
 from heapq import heappop, heappush
 
@@ -32,7 +33,6 @@ def manhattan(puzzle, size, goal):
     return res
 
 
-# See blog post for rundown
 def a_star(state, goal, size):
     c = count()
     queue = [(0, next(c), state, 0, None)]
@@ -64,3 +64,35 @@ def a_star(state, goal, size):
             open_set[m] = tentative_g, move_h
             heappush(queue, (move_h + tentative_g, next(c), m, tentative_g, node))
     return (False, [])
+
+
+contents = []
+while True:
+    try:
+        line = int(input())
+    except EOFError:
+        break
+    contents.append(line)
+size = contents[0]
+puzzle = contents[1:]
+goal = []
+for i in range(size**2):
+    goal.append(i)
+solvable, soln = a_star(tuple(puzzle), tuple(goal), size)
+directions = []
+for i in range(1, len(soln)):
+    diff = soln[i-1].index(0) - soln[i].index(0)
+    if diff == size:
+        directions.append("UP")
+    elif diff == -size:
+        directions.append("DOWN")
+    elif diff == 1:
+        directions.append("LEFT")
+    elif diff == -1:
+        directions.append("RIGHT")
+    else:
+        print("Error: bad direction matching")
+        break
+print(len(directions))
+for d in directions:
+    print(d)
