@@ -1,225 +1,127 @@
-import random, math
-from tile import Tile
+import random
 from solver import a_star
-
-def runGame(num) :
-    # Puzzle will be `num` * `num` dimensions, where `num` is an integer from user input.
-    #   `num` is stored in the constant `DIM`.
-    DIM = num
-    
-    # Create two lists of Tile objects; one with randomly shuffled but solvable coordinates,
-    #   and the other with the coordinates of a solved DIM * DIM board.
-    tiles = None
-    solution = None
-    # Ensure we don't generate an already solved list of tiles!
-    listTiles = list()
-    listSoln = list()
-    while listTiles == listSoln :
-        tiles = genPuzz(DIM, "puzzle")
-        solution = genPuzz(DIM, "solvedBoard")
-
-        for tile in tiles : listTiles.append(tile.getNum)
-        for tile in solution : listSoln.append(tile.getNum)
-
-    # Initializes 2-D lists used to display board (and solution) with zeros
-    board = [[0 for i in range(DIM)] for j in range(DIM)]
-    solvedBoard = [[0 for i in range(DIM)] for j in range(DIM)]
-    
-    # Change values of 2-D lists to contain numbered Tile objects at their respective coordinates
-    update(board, tiles)
-    update(solvedBoard, solution)
-
-    # Print rules, including what solved state looks like
-    printRules(solvedBoard, DIM)
-
-    # Start the game!
-    maxTileNum = DIM * DIM - 1
-    running = True
-    # Loop to take user input and print new game state/relevant message in response, until game is solved
-    #   or user quits.
-    while running :
-        printBoard(board)
+def rungame(size):
+    puzzle, soln = puzzleGen(size)
+    printrules(soln, size)
+    while puzzle != soln:
+        printpuzzle(puzzle, size)
         entry = input("Input: ")
-        num = None
-        try :
-            num = int(entry)
-        except ValueError :
-            if entry == "help" :
-                printRules(solvedBoard, DIM)
+        input_move = None
+        try:
+            input_move = int(entry)
+        except ValueError:
+            if entry == "help":
+                printrules(soln, size)
                 continue
-            elif entry == "quit" :
+            elif entry == "quit":
                 print("Goodbye!")
                 running = False
                 continue
             elif entry == "solve":
-                print("Giving up already? Solution below: ")
-                print(a_star(board, solvedBoard))
+                solvable, steps = a_star(puzzle, soln, size)
+                if solvable:
+                    print("Solved in", len(steps) - 1, "steps!")
+                    print(getsoln(steps))
+                else:
+                    print("Error: puzzle state not solvable!")
                 continue
-            else :
+            else:
                 print("Invalid input!")
                 continue
-
-        if (num >= 1 and num <= maxTileNum) :
-            x = tiles[num-1].x()
-            y = tiles[num-1].y()
-            oldnum = board[x][y]
-            board[x][y] = 0
-            # Tile objects contain a `move()` function to determine if they can be moved or not based on
-            #   game state. If moveable, the Tile is moved and the function returns True; if not, the
-            #   Tile remains in its position and the function returns False.
-            if tiles[num - 1].move() :
-                update(board, tiles)
-                printBoard(board)
-            else :
-                board[x][y] = oldnum
-                print("Cannot move this tile!")
-        else : 
-            print("No tile found!")
-        
-        # Check if the game is solved. If yes, end the loop and print a congratulatory message :D
-        if solved(tiles, solution, maxTileNum) :
+        moves = possible_moves(puzzle, size)
+        if input_move in moves.keys():
+            puzzle = moves[input_move]
+        else:
+            print("Cannot move this tile!")
+        if puzzle == soln:
+            printpuzzle(puzzle, size)
             celebrate()
-            running = False
 
-def genPuzz(n, mode) :
-    tiles = list()
 
-    # If mode == "puzzle", generate a list of Tile objects with random but solvable coordinates.
-    if mode == "puzzle" :
-        # Create list of all possible coordinates on board
-        possib = list()
-        for i in range(0, n) :
-            for j in range(0, n) :
-                coords = [None]*2
-                coords[0] = i
-                coords[1] = j
-                possib.append(coords)
+def puzzleGen(size):
+    puzzle = [0 for i in range(size**2)]
+    soln = [0 for i in range(size**2)]
+    for i in range(size**2 - 1):
+        puzzle[i] = i + 1
+        soln[i] = i + 1
+    while puzzle == soln or not inversions(puzzle, size):
+        random.shuffle(puzzle)
+    return tuple(puzzle), tuple(soln)
 
-        inver = False
-        while not inver :
-            tiles = list()
-            # Shuffle list of coordinates
-            random.shuffle(possib)
-            # We create one less Tile object than n*n to leave an empty space on the board. We initialize
-            #   the Tile's coordinates from the shuffled list `possib`.
-            for i in range (0, n*n-1):
-                t = Tile(i+1, n, possib[i])
-                tiles.append(t)
-            # The method below returns True if the list of Tile objects generated constitutes a solvable
-            #   puzzle. If False, we generate a new list with re-shuffled coordinates until we have a
-            #   solvable puzzle.
-            inver = solvable(tiles, n)
 
-    # If mode == "solvedBoard", generate a list of Tile objects with coordinates of a solved game state.
-    elif mode == "solvedBoard" :
-        i = 1
-        while i < n*n :
-            for x in range(0, n) :
-                for y in range(0, n) :
-                    coords = [x, y]
-                    tiles.append(Tile(i, n, coords))
-                    i = i + 1
-        # Remove the Tile object where the empty space should be
-        tiles.remove(tiles[n*n-1])
+def inversions(puzzle, size): 
+    invs = 0
+    for i in range(len(puzzle) - 1):
+        for j in range(i+1, len(puzzle)):
+            if puzzle[i] != 0 and puzzle[j] != 0 and puzzle[i] > puzzle[j]:
+                invs += 1
+    z = puzzle.index(0)
+    z_row = z//size + z%size
+    if size % 2 != 0:
+        return invs % 2 == 0
+    else:
+        print("z_row:", z_row)
+        if (size - z_row - 1) % 2 == 0:
+            return invs % 2 == 0
+        else:
+            return not (invs % 2 == 0)
+    
+        
+def swap_tiles(puzzle, i, j):
+    new_state = list(puzzle)
+    new_state[i], new_state[j] = new_state[j], new_state[i]
+    return tuple(new_state)
 
-    return tiles
 
-# Updates the sublists of 2*2 list `board` with the numbers of Tile objects corresponding to board[x][y]
-def update(board, tiles) :
-    for tile in tiles :
-        x = tile.x()
-        y = tile.y()
-        board[x][y] = tile.getNum()
-        # Each Tile object contains the current game state for functionality of `Tile.move()`
-        tile.newGameState(board)
+def possible_moves(puzzle, size):
+    moves = {}
+    i = puzzle.index(0)
+    if i - size >= 0:
+        moves[puzzle[i - size]] = swap_tiles(puzzle, i, i - size)
+    if i + size < len(puzzle):
+        moves[puzzle[i + size]] = swap_tiles(puzzle, i, i + size)
+    if i % size > 0:
+        moves[puzzle[i - 1]] = swap_tiles(puzzle, i, i - 1)
+    if i % size + 1 < size:
+        moves[puzzle[i + 1]] = swap_tiles(puzzle, i, i + 1)
+    return moves
 
-# Prints rules, including what solved game state looks like.
-def printRules(solvedBoard, DIM) :
-    print("\n RULES: \n 1) Move the numbered tiles on the board \n\t until they are in order from 1-" + str(DIM * DIM - 1) + ". \n\t When solved, it will look like this: ")
-    printBoard(solvedBoard)
-    print(" 2) You can only move tiles into an \n\t empty space. You cannot move \n\t diagonally. \n\n 3) Input the number of the tile you \n\t wish to move and press Enter. \n")
-    print(" \n Other commands you can type: \n\t \"help\" - show these rules again \n\t \"solve\" - print the solution \n\t \"quit\" - exit the game \n")
 
-# Prints 2*2 list `board` in lines of size `len(board)`, with even spacing between items on a line.
-def printBoard(board) :
-    MAX = len(board)**2
+def printrules(soln, size):
+    print("\nRULES: \n 1) Move the numbered tiles on the puzzle until they are in order from 1-" + str(size**2 - 1) + "\n\t (with the empty '_' tile at the beginning). When solved, it will \n\t look like this: \n")
+    printpuzzle(soln, size)
+    print(" 2) You can only move tiles into an empty space. You cannot move diagonally. \n\n 3) Input the number of the tile you wish to move and press Enter. \n")
+    print(" \nOther commands you can type: \n\t \"help\" - show these rules again \n\t \"solve\" - print the solution \n\t \"quit\" - exit the game \n")
 
-    for i in range(0, len(board)) :
-        for j in range(0, len(board)) :
-            diff = len(str(MAX)) - len(str(board[i][j]))
-            if board[i][j] == 0 :
-                print("   " + " " * (diff), end='')
-            else :
-                print(" " + str(board[i][j]) + " " + " " * (diff), end='')
-        print()
+
+def printpuzzle(puzzle, size):
+    temp_puzzle = list(puzzle)
+    for i in range(len(temp_puzzle)):
+        if temp_puzzle[i] == 0:
+            temp_puzzle[i] = "_"
+    for i in range(len(temp_puzzle)):
+        # Compares character length of "tile" number to maximum length, to format printing
+        diff = len(str(size**2)) - len(str(temp_puzzle[i]))
+        print(temp_puzzle[i], " ", end=((' ') * diff))
+        if (i + 1) % size == 0:
+            print()
     print()
 
-# Check if the current board state `curr` matches the solved board state `ans`. Return True/False appropriately.
-def solved(curr, ans, maxTileNum) :
-    n = 0
-    for i in range(0, maxTileNum) :
-        currX = curr[i].x()
-        currY = curr[i].y()
-        ansX = ans[i].x()
-        ansY = ans[i].y()
-        if currX != ansX or currY != ansY :
-            n = n+1
-    return n == 0
 
-# Print a celebratory message from a randomly shuffled list.
-#   In the future, we may print fancy ASCII art instead :D
-def celebrate() :
-    winner = list()
+def celebrate():
+    winner = []
     winner.append("Winner, winner, chicken dinner! (Unless you're vegetarian, we have tofu options)")
     winner.append("Huzzah!")
     winner.append("Hurrah!")
     winner.append("Impressive!")
     winner.append("Felicitations.")
     winner.append("Noice!")
-
     random.shuffle(winner)
     print(winner[0])
+    
 
-# Returns True if list of Tile objects `tiles` constitutes a solvable puzzle, returns False if not.
-def solvable(tiles, n) :
-    if (n % 2) != 0 :
-        return (inversionCount(tiles) % 2) == 0
-
-    else :
-        allSquares = list()
-        for i in range(1, n*n + 1) :
-            allSquares.append(i)
-        
-        realSquares = list()
-        for tile in tiles :
-            num = tile.getSqNum()
-            realSquares.append(num)
-
-        emptySqNum = 0
-        for r in realSquares :
-            x = int(r)
-            allSquares.remove(x)
-        emptySqNum = allSquares[0]
-        
-        emptyX = 0
-        if emptySqNum <= n :
-            emptyX = 1
-        else :
-            emptyX = (int(emptySqNum/n) + (emptySqNum%n))
-
-        if (n - 1 - emptyX) % 2 == 0 :
-            return inversionCount(tiles) % 2 != 0
-        else : 
-            return inversionCount(tiles) %2 == 0
-
-# Helper function for `chkInversions()` that returns the number of inversions in a list of Tile objects.
-#   (See README for more on inversions and n-puzzle solvability conditions.)
-def inversionCount(tiles) :
-    invs = 0
-    for i in range (0, len(tiles)) :
-        for j in range(i+1, len(tiles)) :
-            tile1sq = tiles[i].getSqNum()
-            tile2sq = tiles[j].getSqNum()
-            if tile1sq > tile2sq :
-                invs = invs + 1
-    return invs
+def getsoln(steps):
+    tiles = []
+    for i in range(1, len(steps)):
+        tiles.append(steps[i-1][steps[i].index(0)])
+    return tiles

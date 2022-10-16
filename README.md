@@ -1,4 +1,5 @@
 # pypuzzle
+**FIX INV CT**
 A sliding tile puzzle game of arbitrary size n = k\*k - 1.
 
 Solver uses A* search with Manhattan distance heuristic.
@@ -13,7 +14,7 @@ The method **chkInversions()** ensures that every puzzle generated is actually s
 |  1  |  3  |  5  |
 
 ### 1-D notation
-[7, 4, 6, 8, 2, 1, 3, 5]
+[7, 4, 6, 0, 8, 2, 1, 3, 5]
 
 *Inversion count: 18*
 
