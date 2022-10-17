@@ -34,6 +34,10 @@ def manhattan(puzzle, size, goal):
 
 # See blog post for rundown
 def a_star(state, goal, size):
+    if size > 4:
+        print("\nk larger than 4 is not supported for A* solutions to avoid running out of memory. Proceed at your own risk.")
+        return (False, [])
+    
     c = count()
     queue = [(0, next(c), state, 0, None)]
     open_set = {}
