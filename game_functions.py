@@ -15,15 +15,14 @@ def rungame(size):
                 continue
             elif entry == "quit":
                 print("Goodbye!")
-                running = False
-                continue
+                break
             elif entry == "solve":
                 solvable, steps = a_star(puzzle, soln, size)
                 if solvable:
                     print("Solved in", len(steps) - 1, "steps!")
                     print(getsoln(steps))
                 else:
-                    print("Error: puzzle state not solvable!")
+                    print("Error: puzzle state not solvable!\n")
                 continue
             else:
                 print("Invalid input!")
@@ -60,7 +59,6 @@ def inversions(puzzle, size):
     if size % 2 != 0:
         return invs % 2 == 0
     else:
-        print("z_row:", z_row)
         if (size - z_row - 1) % 2 == 0:
             return invs % 2 == 0
         else:
